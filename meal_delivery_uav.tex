@@ -1,0 +1,29 @@
+% The Not So Short Introduction to LATEX 2ε: http://ctan.imsc.res.in/info/lshort/english/lshort.pdf
+\documentclass[11pt]{article}
+
+% install package: sudo tlmgr install texlive-most-doc
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{textcomp}
+\usepackage{tfrupee}
+
+\begin{document}
+\title{Meal Delivery with Unmanned Aerial vehicles}
+\author{Akshit Jain\\
+Email: jaina488@gmail.com}
+\maketitle
+
+
+\input{abstract.tex}
+\input{introduction.tex}
+\input{problem_statement.tex}
+\input{ground_delivery_model.tex}
+\input{aerial_delivery_model.tex}
+\input{introduction_aeronautics.tex}
+
+\bibliographystyle{IEEEtran}
+\bibliography{meal_delivery_uav}
+
+\end{document}

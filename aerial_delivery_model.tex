@@ -1,0 +1,24 @@
+\section{Unmanned Aerial Delivery}
+Similar to section \ref{sec:mgd_model}, here we model UAD. Now instead, we have aerial vehicle $V_a \in \{\text{UAVs}\}$ and $\Omega_g \subset \mathbb{R}^3$ as aerial vehicles are not confined to roads. We will restrict $\Omega_g$ to outdoors. Formally,
+assume flat ground model with x-y plane parallel to ground and z axis pointing upwards. Let,
+\begin{align*}
+    z^r(\mathbf{x}) &= \text{max} (\mathbf{e_z}.\mathbf{x_\alpha} | \mathbf{x_\alpha} \in \overline{\Omega}_{\text{air}}, (\mathbf{x_\alpha} - \mathbf{x}) \times \mathbf{e_z} = \mathbf{0} ) \\
+    \overline{\Omega}_{\text{air}} &: \text{subspace unoccupied by air} \\
+    &= \mathbb{R}^3 \setminus \Omega_{\text{air}} \\
+    \mathbf{e_z} &: \text{unit vector in z-axis}
+\end{align*}
+
+Informally, $z^r(\mathbf{x})$ gives roof height at point $\mathbf{x}$. Second condition restricts $\mathbf{x_\alpha}$ on line $\perp$ to x-y plane passing through $\mathbf{x}$. This lets us define
+\begin{align*}
+    \Omega_a &= \Omega_\text{outdoor} \setminus \Omega_\text{nofly} \\
+    \Omega_\text{outdoor} &= \{\mathbf{x} | \mathbf{x}.\mathbf{e_z} > z^r(\mathbf{x})\} \\
+    \Omega_\text{nofly} &: \text{no fly zones}
+\end{align*}
+Also, let $\Omega_l \subset \Omega_a$ be surface where $V_a$ can land. Our UAD model will thus take a path:
+\begin{equation*}
+    p_{ab} \doteq x_a \longrightarrow x_a^a \longrightarrow x_b^a \longrightarrow x_b | p : t \in \mathbb{R}^+ \mapsto \Omega_a
+\end{equation*}
+
+Note,parcel will be placed by restaurant on its rooftop $x_a^a \in \Omega_l$ from where our $V_a$ can land and pickup. Similarly, parcel will be dropped at point $x_b^a$, nearest and reachable from $x_b$ from where user can pickup.
+
+We will try to find optimum path $x_a^a \longrightarrow x_b^a$ which minimizes energy use and avoids obstacles(other buildings). In order to find cost of a path, we will need first design the vehicle and model its energy consumption. We will restrict this exploration to VTOL, since we are constrained by relatively high min. take off angle as fence height to roof width ratio is high for urban rooftops. For design and analysis, we introduce reader to basic aeronautics concepts in next section relevant to our analysis.

@@ -1,0 +1,32 @@
+\section{Manned Ground Delivery: Establishing Baseline}
+\label{sec:mgd_model}
+To any research problem, it is important to define metric and establish baseline of the current approach in order to quantify performance of proposed approach. In this section, we will formalize existing meal delivery model and compute baseline cost.
+
+In Manned ground delivery(MGD), package needs to be transported from point $x_a$ (restaurant) to $x_b$ (user). Here, 
+\begin{equation*}
+    x_{\alpha} \doteq (x_\alpha, y_\alpha, z_\alpha) | x_\alpha \in \Omega_d \subset \mathbb{R}^3 \forall \alpha \in \{a,b\}
+\end{equation*}
+where $\Omega_d$ is reachable subspace by MGD, say appartments $\cup$ restaurants. Lets denote ground vehicle by $V_{g} \in \{\text{bike}, \text{car}, \text{scooter} \dots\}$ and $\Omega_g \subset \mathbb{R}^2$ be the subspace(roads) reachable by $V_{g}$. Let, $x_\alpha^g \in \Omega_g$ be the nearest point to $x_\alpha \in \Omega_d$, say parking spot. MGD takes a path:
+\begin{equation*}
+    p_{ab} \doteq x_a \longrightarrow x_a^g \longrightarrow x_b^g \longrightarrow x_b | p : t \in \mathbb{R}^+ \mapsto \Omega_d 
+\end{equation*}
+Edges $x_\alpha \longleftrightarrow x_\alpha^g$ are traversed by human where stairs, elevators can also be used. Optimum path $ p_{ab}^g \doteq x_a^g \longrightarrow x_b^g$ on $\Omega_g$ is found (usually third party service eg. google maps) and navigated to minimize time, since time taken primarily dictates cost as we will see later.
+
+\subsection{Modelling delivery cost}
+We will model monetary cost, $\theta_g$ of our MGD as this is a must condition to prove economic viability ie. $\theta_a \leqslant \theta_g$ where $\theta_a$ is monetary cost for  Unmanned Aerial Delivery(UAD).
+Assuming there exists a feasible path, we model monetary cost $\theta_\alpha(x_a, x_b)$ as:
+\begin{align*}
+    \theta_\alpha(x_a, x_b) &= \theta^E + \theta^H + \theta^V \\
+    \theta^E &: \text{fuel cost} \\
+    &=  \frac{\overbrace{d(p_{ab})}^\text{path distance}}{\underbrace{\eta(V_\alpha)}_\text{mileage}}  \times \underbrace{c_\text{fuel}}_\text{cost per vol.} \\
+    \theta^H &: \text{Human resource cost} \\
+    &= \frac{\overbrace{c_\text{human}}^\text{monthly salary}}{30 \times \underbrace{t_d}_{\text{daily working hour}} \times 3600} \times \underbrace{t(p_{ab})}_\text{path time} \\
+    \theta^V &: \text{vehicle asset cost} \\
+    &= \frac{c_\text{vehicle}}{d_{\text{life}}} \times d(p_{ab})
+\end{align*}
+
+Above model is very rough and inaccurate for eg. orders traffic varies through out day(peaks during lunch and dinner) but this is compensated by jointly using resource for e-commerce, vehicle is used as joint ownership model, software development cost is not considered. For more accurate model refer \cite{zomato_cost}.But since we have estimate of avg. cost per delivery $\theta_g \sim $ \rupee~65  from \cite{zomato_cost}\cite{office_chai}, We can use above model to estimate contribution of each component. Above model gives estimate \cite{cost_estimate_colab} $\theta^H \sim$ \rupee~46.5, $\theta^E \sim$ \rupee~6.5, $\theta^V \sim$ \rupee~8
+giving $\theta_g =$  \rupee~61. 
+
+As it can be seen, major contribution is $\theta^H$ ie. $75\%$, this should make it obvious that an Unmanned Ground vehicle(UGV) or more popularly self-driving cars presents itself as superior solution. But complete automation(no human intervention) on ground continues to be a challenging problem which requires detecting traffic signals, construction signs, people, moving vehicles and motion planning among them. Additionally UGV are time constrained during peak traffic as almost all human traffic is confined to $\Omega_g$. Relatively, autonomy in aerial vehicles is less challenging due to absence of most of above and at the same time enjoys euclidean distance over manhattan distance at much higher speeds.
+

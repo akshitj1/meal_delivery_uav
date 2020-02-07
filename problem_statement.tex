@@ -1,0 +1,76 @@
+\section{Problem Statement}
+Assume, in an urban environment, a food order is placed by user to a restaurant by some means (App, call, or scheduled).
+Once the order is received and prepared, it is dispatched from pickup location(restaurant) which will eventually reach 
+customer. \\
+
+Let,
+\begin{align*}
+    & t_{pl} : \text{time of order \textbf{pl}acement}\\
+    & t_{pr}: \text{time order was \textbf{pr}epared}\\
+    & t_{pk}: \text{time of order \textbf{p}ic\textbf{k}up}\\
+    & t_{dr}: \text{time of order \textbf{dr}op(received by user)}\\
+\end{align*}
+Needless to say, 
+\begin{align*}
+    & t_j \in \mathbb{R^+} \forall t_j \in \{t_{pl}, t_{pr}, t_{pk}, t_{dr}\} \\
+    \text{and} \\
+    & 0 \leqslant t_{pl} < t_{pr} \leqslant t_{pk} < t_{dr}
+\end{align*}
+
+Using boldface $ \textbf{t}_x $ to represent time span between two events,
+\begin{align*}
+    \textbf{t}_{tot} & : \text{\textbf{tot}al time from order to drop} \\
+    & = t_{dr} - t_{pl} \\
+    \textbf{t}_{d} & : \text{time taken after it was ready for \textbf{d}elivery} \\
+    & = t_{dr} - t_{pr}
+\end{align*}
+
+Usually there is a constraint,
+\begin{equation}
+    \textbf{t}_{tot}<\textbf{T}_{wait}  \label{wtime}
+\end{equation}
+where, $\textbf{T}_{wait}$ is the maximum time user can wait after placing an order.
+eg. it won't be acceptable if your food arrives an hour after you order.
+Less typically, there can also be constraint, 
+\begin{equation}
+    \textbf{t}_{d} < \textbf{T}_{stale}  \label{dtime}
+\end{equation}
+where $\textbf{T}_{stale}$ is the time after preparation, the item looses its integrity.
+eg. a pizza looses its integrity after, say 30 mins if reheating is not availiable. If we had single order,
+our goal would be to minimize the cost of delivery (we will define this cost later), while respecting constraints 
+\eqref{wtime} and \eqref{dtime}. Note that, we can only control $\textbf{t}_{d}$ as $t_{pr}$ is within restaurant's control. 
+So, if $t_{pr}-t_{pl}>\textbf{T}_{wait}$, then solution is trivially infeasible.
+
+Concentrating on single delivery for the scope of this report, our aim will be to minimize cost $\boldsymbol{\theta_{\text{mission}}}$ incurred to take parcel from pickup point $x_p$ to drop point $x_d$ satisfying constraints put forth by vehicle $V$ and $\textbf{T}_{\text{wait}}$.
+\begin{align*}
+    & \displaystyle{\min_{\alpha \in S} \boldsymbol{\theta_{\text{mission}}}(\alpha)} \\
+    & \alpha \doteq \{x_p, x_d, V\} \\
+    & S \doteq S(V, T_{\text{wait}}) \\
+\end{align*}
+ In next section we will see, how $\boldsymbol{\theta_{\text{mission}}}$ or more generally $\boldsymbol{\theta_{a,b}}$ to move from point $x_a$ to $x_b$, depends on vehicle selection.
+
+
+% If our vehicle takes path: \\
+% \begin{equation*}
+% p_{\text{mission}}=x_{\text{source}} \longrightarrow x_{\text{pickup}} \longrightarrow x_{\text{drop}}
+% \end{equation*}
+% and assuming cost of path theta_{source, drop} to be additive:
+
+% where $p_{\text{mission}}$ is the path taken by vehicle to complete the misssion,
+%  ${n_{\text{source}}}$ is the node corresponding to state of vehicle at its start location(could be a hub or charging station),
+% $n_{\text{pickup}}$ is node corresponding to restaurant, $n_{\text{drop}}$ corresponds to user's location. Each $\longrightarrow$ is the edge $e_{a,b}$ for path from $n_a$ ot $n_b$.
+% Cost of mission is:
+% \begin{equation*}
+%     \theta_{\text{mission}} = \Sigma\{ \theta_{a,b}\} \forall (a,b) \exists e_{a,b}  \in p_{\text{mission}}
+% \end{equation*}
+% In order to calculate $\theta_{mission}$, we need to find
+% \begin{equation}
+% \theta_{a,b}=f(n_a, n_b, s_{a}, V, t_{pk}, T_{tr})
+% \end{equation}
+% where,
+% \begin{align*}
+% n_x &: \text{state of node } x \vert x \in {a,b} \\
+% s_a &: \text{state of vechicle at node } a \\
+% V &: \text{vehicle constraints} \\
+% \end{align*}
+% We will now begin our journey to explore $f(\cdot)$ and how it varies with vehicle selection.
