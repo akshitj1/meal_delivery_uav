@@ -1,0 +1,122 @@
+\section{UAV Design}
+In this section, we will design structure and components of our UAV which requires estimating wing sizing, power loading, energy consumption for mission, battery sizing and vechile weight. We refer to texts \cite{beard2012small} and \cite{anderson1999aircraft}. Introductory course\cite{sardela2018uav} might also be helpful to reader.
+
+We consider the delivery model where we partner with restaurants to place charging hubs on roofs. This model has advantage that total energy req. for mission reduces by saving VTOL routine for charging as this routine is most energy intensive. Battery will be recharged during order pickup time. Prime motivation to optimize for energy is that battery will contribute majorly to total weight as we will see later and power consumption propotional to $W^3$ (TODO: cite relevant section). A light weight UAV is more agile, safe and energy effecient.
+
+For battery sizing, we will estimate ana upper bound for worst case mission scenario $z^r(x_\text{pickup})$, $z^r(x_\text{drop})$, $z^r(x_\text{charge})$ are all 0. Just next to each point $x_\text{pickup}$, $x_\text{drop}$ and $x_\text{charge}$ stands tallest building $z^r_\text{max} \in \Omega_l$ which dictates the cruise height to $h_\text{cruise} = z^r_\text{max}$. For compact notation, we will denote pickup, drop and next pickup/charge as simply a, b ,c. Further, all our analysis will lie in $ \Omega_a $ and $x_\alpha \doteq x_\alpha^a \in \Omega_l \forall \alpha \in \{a, b, c\}$.
+Let,
+\begin{align*}
+    E_\text{mission} &= E_{ac} = E_{ab} + E_{bc}\\
+    E_{ab} &= E_\text{climb}(h_\text{cruise} - h_a) \\
+     & \quad + E_\text{cruise}(d_{ab}) \\
+     & \quad + E_\text{descent}(h_\text{cruise} - h_b) \\
+    \text{since}, h_a=h_b=0\\
+    E_\text{mission} &= 2E_\text{climb}(h^\text{max}) + 2E_\text{descent}(h^max) + E_\text{cruise}(d_{ab}^\text{max} + d_{bc}^\text{max}) \\
+    &< 4E_\text{climb}(h^\text{max}) + E_\text{cruise}(d_{ac}^\text{max})
+\end{align*}
+Note, for now, in above model we have not considered energy req. during transistion from vertical climb to cruise. This will need to be modeled in order to hold validity of upper bound. 
+
+\subsection{Climb Energy}
+\label{sec:climb_energy}
+
+Modelling $E_\text{climb}$,
+\begin{align*}
+    F_T &=F_G + F_D\\
+    &= m_\text{to}g + q_\infty S_\text{wet}\\
+    \text{where},\\
+    q_\infty &\doteq \frac{1}{2} \rho v_\text{climb}^2 \\
+    S_\text{wet} &: \text{wetted surface area in top view} \\
+    m_\text{to} &: \text{maximum take off mass}
+\end{align*}
+
+$F_T$ is provided by all our propellers combined. Thrust by each propeller:
+\begin{align*}
+    F_\text{prop} &= \frac{F_T}{N_\text{prop}} \\
+    P_i &= \sqrt{\frac{F_\text{prop}^3}{2 \rho S_\text{prop}}} \\
+    P_\text{shaft} &= \frac{P_i}{\eta_\text{prop}} \\
+    P_\text{climb} &= \frac{P_\text{shaft}}{\eta_\text{motor}}\\
+    \text{Where},\\
+    N_\text{prop}&: \text{number of propellers} \\
+    S_\text{prop} &: \text{propeller disk area} \\
+    P_i &: \text{induced power from \eqref{eq:thrust_momentum}} \\
+    \eta_\text{prop} &: \text{propeller effeciency} \\
+    \eta_\text{motor} &: \text{transmission effeciency}
+\end{align*}
+
+This finally gives climb energy:
+\begin{align*}
+    E_\text{climb} &= N_\text{prop} P_\text{climb} t_\text{climb}\\
+    \text{Where, for constant climb rate } v_\text{climb}: \\
+    t_\text{climb} &= \frac{h^{max}}{v_\text{climb}}
+\end{align*}
+
+We will limit our $v_\text{climb}$ to 1 m/s, though commercial drones(Wingcopter) have $v_\text{climb} \leqslant 6 m/s$, as we donot yet have understanding of heat dissipation. Note that $E_\text{climb}$ will have a minima at higher $v_\text{climb}$, satisfying constraint $P_\text{climb} < P_{\text{discharge}}^\text{max}$. But operating at max discharge rate of battery reduces battery cycle life as irrevesible reactions happen at higher tempratures.
+
+\subsection{Cruise Energy}
+At level unaccelerated flight during cruise,
+\begin{align}
+    \label{eq:cruise}
+    \begin{split}
+        F_T &= F_D\\
+        F_L &= F_G\\
+        \text{From \eqref{eq:airfoil},}\\
+        \frac{F_L}{F_D} &= \frac{C_l}{C_d}\\
+        \text{at cruise},\\
+        \pi_\text{cruise} &= (\frac{C_l}{C_d})_\text{max}\\
+        &= \frac{1}{2}\sqrt{\frac{\pi e AR}{C_{D0}}}\\
+        F_T &= \frac{F_g}{\pi_\text{cruise}}        
+    \end{split}
+\end{align}
+
+For cruise energy, similar analysis can be carried out as carried out as in \ref{sec:climb_energy} by replacing $F_T$ from \eqref{eq:cruise}. One thing, we will need is $v_\text{cruise}$. At cruise, induced drag equals parasitic drag(eq. 5.34, pg.297 \cite{anderson2005introduction})
+\begin{align}
+    \begin{split}
+        \label{eq:cruise_drag}
+        C_{d0} &= K C_l^2 \\
+        \text{where,}\\
+        K &= \frac{1}{\pi e AR} \\    
+    \end{split}
+\end{align}
+\begin{align*}
+    q_\infty c_l S_\text{wing} &= F_G \\
+    v_\text{cruise} &= \sqrt{\frac{2F_g}{\rho_\infty C_l S_\text{wing}}}\\
+    \text{where from \eqref{eq:cruise_drag},}\\
+    C_l &= \sqrt{\frac{C_{d0}}{K}}
+\end{align*}
+
+We will design our wing chord to get $v_\text{cruise} = 60~\text{km/h}$. We limit this speed, since this will be dictated by our obstacle avoidance system.
+
+\subsubsection{On estimate of glide ratio}
+
+An accurate estimate of glide ratio($\pi_\text{cruise}$)\cite{Lifttodr0:online}, will depend on final structure as parasitic drag ($C_{d0}$) depends on wetted surface area and surface material characeristics(coeffecient of friction). $\pi_\text{cruise}$ can be as high as $\sim$ 70 for gliders, $\sim$ 60 for sail planes and as low as 4 for helicopters. For our estimates, we can assume $\pi_\text{cruise}=11$ which is equivalent for cessna 172.
+
+\subsection{Transistion Energy}
+Too lengthy, refer to \cite{kamal2018design}
+
+\subsection{Maximum Takeoff Weight}
+\begin{align*}
+    m_{to} &= m_{\text{battery}} + m_{\text{payload}} + m_{\text{empty}}\\
+    m_{\text{empty}} &= m_{\text{structural}} + m_{\text{motors}} + m_{\text{avionics}}
+\end{align*}
+
+Since, $m_{\text{empty}}$ will depend on frame material chosen(Nylon, Carbon fibre) and load analysis. For this we will refer to software package SUAVE\cite{lukaczyk2015suave}. For now, we use emperical estimate of $m_{\text{empty}}$ of VTOL of similar payload capacity(Wingcopter).
+
+\subsection{Propeller Sizing}
+
+We use emperical relation(eq. 8.71 \cite{anderson1999aircraft})
+\begin{equation*}
+    D_{prop} = 10.7 P_\text{shaft}^\frac{1}{4}
+\end{equation*}
+
+subsection{Battery sizing}
+\begin{align*}
+    m_\text{battery} &= \frac{E_\text{mission}}{\rho_E}\\
+    \text{where,}\\
+    \rho_E &: \text{energy density of battery}
+\end{align*}
+
+\subsection{Optimization}
+Above numerical computations are carried out in \cite{VTOLdesi25:online}
+MTOW: 5 kg
+$m_\text{battery}$: 0.4 kg
+TODO: add parameters used. and results. and energy monetary cost
