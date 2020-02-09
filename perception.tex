@@ -1,0 +1,65 @@
+\section{Visual Perception}
+
+Perception is a genral term which refers to interpretation of sensory information in order to represent and understand environment.
+
+We will first state our high level capabilities required for mission, which will inturn guide the scope of perception required.
+
+\begin{enumerate}
+    \item \label{it:1} User should be given abitlity to choose exact delivery location based on his reachability and convenience. The choice is restricted and subset of our reachable set(recall $\Omega_l$ from \ref{sec:uad_model} ).
+    \item \label{it:2} Digital Eelvation Map(buildings, trees, mountains) needs to be known in advance in order to plan trajectory, choosing landing sites.
+    \item \label{it:3} Capability to percieve and avoid unseen obstacles(Parked cars, objects, antenas etc.)
+    \item \label{it:4} Ability to accurately estimate ($\sim$ cm order) 3D position even in GPS denied environment.
+\end{enumerate}
+
+\ref{it:1} requires providing uer with intutive map. We choose RGB-D map of service area, zoomed down to users GPS/current location. How do we compute this RGB-D map, will be discussed in later sections. \ref{it:2} and \ref{it:3} can be solved by mapping environment with sensors such as Lidar, Radar or camera sensors. We rule out Radar, Lidar due to prohibitive weight, high cost and non solid state nature.
+
+Visual sensors(cameras), on the other hand have seen tremendous advancement in weight, resolution, power consumption and cost attributing to smartphone revolution. Cameras are general purpose sensor which, given the right intelligence and computation power both of which have been enabled by Deep models in Computer Vision community and low power GPUs (Jetson Family \cite{nvidiatx2:online}). Commercial drones such as, Skydio 2 \cite{Skydio2T67:online} have demonstrated robust obstacle avoidance and tracking to enable autonomous FPV video recording.
+
+For \ref{it:3}, bio inspired \textbf{event cameras} seems to be promising solution \cite{event_avoid:online} \cite{falanga2019fast}, since it measures intensity gradient rather than constant interval images, hence is not prone to motion blur. We have not explored this, but lies in our future work.
+
+\ref{it:4} is usually solved as subproblem while solving mapping for \ref{it:2} in visual simultaneous localization and mapping(vSLAM).
+
+Specifically in coming sections, we will discuss about visual odometry(VO), visual localisation and mapping(vSALM), depth estimation and structure from motion(SfM) or 3D reconstruction.
+
+All of the above emerge from common set of fundamentals, collectively studied under field of visual perception. For introduction to this field, we refer to excellent text \cite{ma2012invitation} and course\cite{perception_coursera:online}.
+
+\subsection{Modelling camera, image projection}
+Image projection is simply:
+% \begin{align*}
+    
+% \end{align*}
+
+\subsection{Camera calibration}
+Camera calibration matrix $K$, can be found by either spec sheet from manufacturer or general point correspondences(manually selected or automatic features). Implemetation in software packages(Matlab\cite{MatlabCa:online}, opencv\cite{OpenCVCa20:online}) is available.
+
+\subsection{Feature extractors}
+All of subsequent sections will use feature points in order to find correspondences in different scenes. A feature point has location in image and description of neighbourhood patch. Desirable properties of feature points include scale, rotation and illumination invariant. For real time extraction, hand crafted ORB features are used while more robust SIFT features are used offline. Recently, learned local features are gaining popularity due to higher recall and robustness. For comparision and benchmark of features extractors refer to \cite{hpatches_2017_cvpr} \cite{schoenberger2017comparative}. 
+
+
+\subsection{Visual localization and mapping}
+\label{sec:vslam}
+vSLAM consists of baiscally three modules:
+\begin{enumerate}
+    \item Initialization
+    \item Tracking
+    \item Mapping
+\end{enumerate}
+
+\paragraph{Initialization}, initializes a coordiate frame for pose estimation and 3d reconstruction. First features are computed in current image frame and then correspondences are found with refrence image frame. Parallely Homography matrix $H$(for planar scenes), with 4 point correspondences(sec 5.3 \cite{ma2012invitation}) and Essential matrix $E$ (non-planar scene), is computed using eight 
+point algorithm (sec. 5.2.1 \cite{ma2012invitation}). Matching is done inside RANSAC scheme (sec 11.2.2 \cite{ma2012invitation}) as matches can be noisy.
+
+\paragraph{Tracking}
+For continous tracking, constant velocity model can be assumed to guide where to look for next correspondences w.r.t current frame. While if tracking is lost(say dark spots, sudden gust) wider search is performed. Essential matrix $E$ (rotation+translation) with epipolar constraint as already discussed gives relative pose.
+
+\paragraph{Mapping}
+3D points can be recovered by triangulating pints from covisible frames. New points are added by adding current unmatched points. Since these can grow rapidly, only those points which are matched in future frames are kept and rest are discarded.
+
+\paragraph{Loop Closure}
+Since, our map will accumulate drift error according to distance of camera movement over time. This drift error can be eleminated if we again see previous scene in our path(loop). The correction is then propogated to all points in  this loop path.
+
+For informal survey on vSLAM methods, refer \cite{taketomi2017visual}. Popular implemetations include VINS-mono \cite{vins_code:online}\cite{qin2017vins}, ORB-SLAM \cite{orb_code:online} \cite{mur2015orb}, OpenVslam\cite{openvslam_code:online}\cite{openvslam2019}.
+
+\subsection{Structure from motion and depth estimation}
+SfM is the process of reconstructing 3D structure from series of images from different view points. Similar techniques of point triangulation, bundle adjustment as discussed in \ref{sec:vslam}. But at same time, SfM models assumes images from multiple uncalibrated images and additionaly texture mapping is also performed. SfM models are not designed to work in real time and are carried out offline with GPUs. refer \cite{schoenberger2016sfm}, COLMAP\cite{colmapco70:online}
+
+\textbf{Depth estimation} ie. RGB-D map of entire scene is required in real time for obstacle avoidance in our case. This can either be done with parallax in multi view stereo(MVS) cameras or from single RGB image from monocular camera using Deep models. For training data generation \cite{DBLP:journals/corr/abs-1904-11111} uses SfM pipeline to get sparse depth map of scene. Then training loss is defined only on these sparse regions. The model is then able to predict dense depth of entire scene. Deep models are also used by commercial drones\cite{Skydio2T67:online} for robust obstacle avoidance.

@@ -115,8 +115,68 @@ subsection{Battery sizing}
     \rho_E &: \text{energy density of battery}
 \end{align*}
 
-\subsection{Optimization}
+\subsection{Analysis}
 Above numerical computations are carried out in \cite{VTOLdesi25:online}
-MTOW: 5 kg
-$m_\text{battery}$: 0.4 kg
-TODO: add parameters used. and results. and energy monetary cost
+
+\begin{center}
+    \begin{tabular}{c c}
+        $m_\text{payload}$ & 1.5 kg \\
+        $m_\text{empty}$ & 3.6 kg \\
+        $\rho_E\text{(Li-ion)}$ & 240 Wh/kg\\
+        $\rho_E\text{(Li-Ti)}$ & 96 Wh/kg\\
+        Wing length & 1.8 m \\
+        Wing chord & 0.39 m \\
+        Tail length & 0.58 m \\
+        Tail chord & 0.33 m\\
+        $v_\text{climb}$ & 1 m/s \\
+        $h_\text{climb}$ & 150 m\\
+        no. of vertical props & 4 \\
+        no. of horizontal props & 1 \\
+        Propeller Diameter & 0.385 m \\
+        $\eta_\text{prop}$ & 0.8 \\
+        $\eta_\text{shaft}$ & 0.8 \\
+        $c_{d0}$ & 0.017 \\
+        $e_\text{oswald}$ & 0.8 \\
+        $\pi_\text{cruise}$ & 10 \\
+        $v_\text{cruise}$ & 60 km/h \\
+        $d_{ab}$ & 6 km \\
+        $d_{bc}$ & 2km \\
+        $d_{cruise}(d_{ab} + d_{bc})$ & 8km \\
+        $P_\text{avionics} (2P_\text{GPU})$ & 15 W\\
+    \end{tabular} 
+\end{center}
+
+Running line search to get optimum battery mass yeilds:
+\begin{center}
+    \begin{tabular}{c c c}
+        Battery type & $m_\text{total}$(kg) & $m_\text{battery}$(kg) \\
+        \hline
+        Li-ion & 5.56 & 0.47\\
+        Li-Ti & 6.6 & 1.5
+    \end{tabular}
+\end{center}
+
+Energy distribution in case of Li-ion  being:
+\begin{center}
+    \begin{tabular}{c c}
+        Component & Energy(kJ)\\
+        \hline
+        $\sum$ VTOL & 373.5\\
+        Forward flight & 18.6\\
+        Compute & 16.2\\
+    \end{tabular}
+\end{center}
+
+It is interesting to note, how power hungry VTOL phase is! This is for battery sizing worst case climb height for all 4 phases at very low speed of 1 m/s. In actual operation this will reduce drastically.
+
+We also calculate \textbf{worst case} mission energy cost:
+\begin{center}
+    \begin{tabular}{c c}
+        Battery-Type & Cost(\rupee)\\
+        \hline
+        Li-ion & 50.4\\
+        Li-Ti & 64.7\\
+    \end{tabular}
+\end{center}
+
+
